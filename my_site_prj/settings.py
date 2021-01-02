@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'blog', #블로그라는 앱이 있다는 것을 알려준다.
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
