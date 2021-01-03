@@ -4,7 +4,7 @@ from django.contrib.auth.models import User # 유저 개념
 class Post(models.Model):
     title = models.CharField(max_length = 30) # 블로그에서 글
     content = models.TextField() # 블로그 내용
-
+    head_image = models.ImageField(upload_to='blog/%Y/%M/%d/',blank=True) # 년도를 넣게됨 Y 하면은 이미지 업로드 모듈
     creaded = models.DateField() #언제 작성이 되는지
 
 

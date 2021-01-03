@@ -15,8 +15,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include # include 가져오기
+from django.conf.urls.static import static # url 모음을 위한 추가
+from django.conf import settings # url 모음을 위한 추가2
 
 urlpatterns = [
     path('blog/', include('blog.urls')), # 이 blog로 왔을 때 blog.urls 로 가라
     path('admin/', admin.site.urls),
 ]
+
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
