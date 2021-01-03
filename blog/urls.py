@@ -18,5 +18,5 @@ from django.urls import path, include # include 가져오기
 from . import views
 
 urlpatterns = [
-    path('', views.index)
+    path('', views.PostList.as_view()),
 ]
