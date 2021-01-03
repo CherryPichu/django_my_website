@@ -1,6 +1,16 @@
 <!DOCTYPE html>
+{% load static %}
 <html lang="ko">
 <head>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+{#    <script type="text/javascript" nonce="c26dbf0c4bd84f69852bf0fccbb" src="//local.adguard.org?ts=1609645844166&amp;type=content-script&amp;dmn=bootswatch.com&amp;app=whale.exe&amp;css=1&amp;js=1&amp;gcss=1&amp;rel=1&amp;rji=1&amp;sbe=0&amp;stealth=1&amp;uag="></script>#}
+{#    <script type="text/javascript" nonce="c26dbf0c4bd84f69852bf0fccbb" src="//local.adguard.org?ts=1609645844166&amp;name=AdGuard%20Popup%20Blocker&amp;name=AdGuard%20Extra&amp;type=user-script">#}
+
+    </script><link rel="stylesheet" href="{%  static 'blog/bootstrap/bootstrap.css' %}">
+    <link rel="stylesheet" href="{%  static 'blog/_assets/css/custom.min.css' %}">
+    <!-- 복사를 해온 부분 -->
+
     <meta charset="UTF-8">
     <title>Title</title>
 </head>
@@ -10,5 +20,11 @@
 <p>{{p.title}}</p>
 <p>{{p.content}}</p>
 {% endfor %}
+
+  <script src="{%  static 'blog/_assets/js/jquery.min.js' %}"></script>
+    <script src="{%  static 'blog/_assets/js/poper.nin.js' %}"></script>
+    <script src="{%  static 'blog/bootstrap/bootstrap.min.js' %}"></script>
+    <script src = "{%  static 'blog/_assets/js/custom.js' %}"></script>
+    <!-- 복사를 해온 부분 -->
 </body>
 </html>
