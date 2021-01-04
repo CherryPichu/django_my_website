@@ -106,9 +106,9 @@
             <h1 class="my-4">블로그</h1>
 
             <!-- Blog Post -->
-            {% for p in object_list %} {# for 혹은 조건문일때 % 넣기 아니면 {} 넣기 #}
+            {% for p in object_list %} {# for 혹은 조건문일때 % 넣기 아니면 {} 넣기 endfor는 필수#}
             <div class="card mb-4">
-                {% if p.head_image %}
+                {% if p.head_image %} {# 조건문 사용하기 endif는 필수 #}
                     <img class="card-img-top" src="{{ p.head_image.url }}" alt="Card image cap">
                 {% else %}
                     <img class="card-img-top" src="https://picsum.photos/750/300" alt="Card image cap">
@@ -116,7 +116,7 @@
 {#                <img class="card-img-top" src="http://placehold.it/750x300" alt="Card image cap">#}
                 <div class="card-body">
                     <h2 class="card-title">{{ p.title }}</h2>
-                    <p class="card-text">Posted on {{ p.content }}</p>
+                    <p class="card-text">Posted on {{ p.content | truncatewords:50 }}</p> {#  단어는 50개 까지만 #}
                     <a href="#" class="btn btn-primary">Read More &rarr;</a>
                 </div>
                 <div class="card-footer text-muted">
