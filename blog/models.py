@@ -14,5 +14,6 @@ class Post(models.Model):
     # 누가 들어올 수 있다.
     #on_delate = True 사용자가 탈퇴를 할 때 글도 삭제할꺼냐?
 
-
+    def get_absolute_url(self): # 어드민 페이지에 view onsite 버튼이 생김
+        return '/blog/{}/'.format(self.pk)
 

@@ -20,6 +20,6 @@ from . import views
 urlpatterns = [
     path('<int:pk>/', views.PostDetail.as_view()), # <int:pk> int 타입으로 숫자가 들어올 때 pk를 의미한다.
     # views의 post_detail를 실행시킨다.
-
+    # 번호를 하나씩 부여한다.
     path('', views.PostList.as_view()),
 ]
