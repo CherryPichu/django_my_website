@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+{#    <title>{{ blog_post.title }}</title> 이름이 명시되지 않으면 object로 초기설정됨#}
+    <title>{{ object.tiitle }}</title>
+</head>
+<body>
+    <h1>{{ object.title }}</h1>
+    <div>
+        {{ object.content }}
+{#        {{ blog_post.content }}#}
+    </div>
+
+</body>
+</html>
