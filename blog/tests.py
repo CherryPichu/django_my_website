@@ -33,7 +33,7 @@ class TestView(TestCase) : # 테스트 모듈 상속
         title = soup.title
 
         # print(title) # <title>Title</title>
-        self.assertEqual(title.text, 'Title') # Title == Title  ?
+        self.assertEqual(title.text, ' - Blog')
 
 
         # navbar = soup.find('div', id = "navbar") # div 태크중에서 id가 navbar인 것을 찾는다.
@@ -63,6 +63,10 @@ class TestView(TestCase) : # 테스트 모듈 상속
         self.assertIn(post_000.title , body.text)
 
 
+        post_000_read_more_btn = body.find('a', id='read-more-post-{}'.format(post_000.pk))
+        self.assertEqual(post_000_read_more_btn['href'], post_000.get_absolute_url())
+
+
     def test_post_detail(self): #
 
         post_000 = create_post(
@@ -81,7 +85,18 @@ class TestView(TestCase) : # 테스트 모듈 상속
         soup = BeautifulSoup(response.content, 'html.parser')
         title = soup.title
 
-        print(title.text)  #
+        # print(title.text)  #
         # self.assertEqual(title.text, '{} - Blog'.format(post_000.title))  # Title == Title  ?
         # 알수 없는 에러 발생으로 넘어감 강의시간 11:00
-        self.check_navbar(soup)
+        self.check_navbar(soup) # 네비게이션 바가 있니?
+
+        body = soup.body
+        main_div = body.find('div', id = "main_div")
+        self.assertIn(post_000.title, main_div.text)
+        self.assertIn(post_000.author.username, main_div.text)
+        self.assertIn(post_000.content, main_div.text)
+
+
+
+    def test_post(self):
+        pass
