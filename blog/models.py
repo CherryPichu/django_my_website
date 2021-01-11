@@ -1,6 +1,16 @@
 from django.db import models
 from django.contrib.auth.models import User # 유저 개념
 # Create your models here.
+
+
+class Category(models.Model):
+    name = models.CharField(max_length=25, unique=True)
+    description = models.TextField(blank=True) # 카테고리에 대한 설명을 쓸 수 있다. 중복을 방지하기 위해서  unique=True 사용
+
+    def __str__(self):
+        return self.name
+
+
 class Post(models.Model):
     title = models.CharField(max_length = 30) # 블로그에서 글
     content = models.TextField() # 블로그 내용
@@ -9,6 +19,8 @@ class Post(models.Model):
 
 
     author = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL) # 어떤 사용자가 사용이 되는지 유저라는 객체를 연결시켜줌
+
+    category = models.ForeignKey(Category, blank=True, null=True,on_delete=models.SET_NULL)
     def __str__(self): # 오버라이딩 이 객체를 문자를 바꾸었을 때 어떻게 보여줄 것인지
         return '{}::{}'.format(self.title, self.author) # 제목 abc
     # 누가 들어올 수 있다.
@@ -16,4 +28,3 @@ class Post(models.Model):
 
     def get_absolute_url(self): # 어드민 페이지에 view onsite 버튼이 생김
         return '/blog/{}/'.format(self.pk)
-
