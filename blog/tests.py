@@ -33,6 +33,13 @@ class TestView(TestCase) : # 테스트 모듈 상속
         self.assertIn('Blog', navbar.text)
         self.assertIn('About me', navbar.text)
 
+    def check_right_side(self, body):
+        # category card 에서
+        category_card = body.find('div', id = 'category-card')
+        self.assertIn('미분류(1)', category_card.text) #### 미분류(1) 있어야 함
+        self.assertIn('정치/사회(1)', category_card.text)#### 정치/사회 (1) 있어야 함
+
+
 
     def test_post_list(self): # 이 함수를 실행시킬 때 마다 새롭게 시작한다.
         response = self.client.get('/blog/') # 숫자를 써주야만 해당 포스트로 간다.
@@ -83,17 +90,13 @@ class TestView(TestCase) : # 테스트 모듈 상속
         self.assertEqual(post_000_read_more_btn['href'], post_000.get_absolute_url())
 
 
+        self.check_right_side(body)
 
-        # category card 에서
-        category_card = body.find('div', id = 'category-card')
-        self.assertIn('미분류(1)', category_card.text) #### 미분류(1) 있어야 함
-        self.assertIn('정치/사회(1)', category_card.text)#### 정치/사회 (1) 있어야 함
         #### 첫번째 포스트에는 '정치/사회' 있어야 함
         main_div = body.find('div', id='main_div')
         self.assertIn('정치/사회', main_div.text)
         self.assertIn('미분류', main_div.text)
 
-        #### 두번째 포스트에는 '미분류' 있어야 함
 
 
     def test_post_detail(self): #
@@ -103,6 +106,12 @@ class TestView(TestCase) : # 테스트 모듈 상속
             content="Hello World We are thr world.",
             author = self.author_000,
         ) # db 추가
+        post_001 = create_post(
+            title='The second post',
+            content='Second Second Second',
+            author=self.author_000,
+            category=create_category(name='정치/사회')
+        )
 
 
         self.assertGreater(Post.objects.count(), 0)
@@ -125,6 +134,9 @@ class TestView(TestCase) : # 테스트 모듈 상속
         self.assertIn(post_000.title, main_div.text)
         self.assertIn(post_000.author.username, main_div.text)
         self.assertIn(post_000.content, main_div.text)
+
+
+        self.check_right_side(body)
 
 
 

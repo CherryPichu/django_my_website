@@ -36,6 +36,13 @@ def index(request): # request는 기본이다.
 class PostDetail(DetailView):
     model = Post
 
+    def get_context_data(self, *, object_list=None, **kwargs): # 미리 만들어줌. 새로운 인자
+        context = super(PostDetail, self).get_context_data(**kwargs) # 그량 외우기 복사 붙어넣기로 자기 자신을 클래스에 넣기
+        context['category_list'] = Category.objects.all() # html에 category_list 변수가 생긴다.
+        context['posts_without_category'] = Post.objects.filter(category=None).count() #get은 하나 filter는 특정 조건 all은 전부 #
+        #category가 없는 것만 가져오기 이름이 posts_without_categor 이다 즉 object를 안서도 됨
+        return context
+
 # def index(request):
 #     posts = Post.objects.all()
 #     return  render(
