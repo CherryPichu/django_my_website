@@ -16,6 +16,7 @@ class PostList(ListView):
         context['category_list'] = Category.objects.all() # html에 category_list 변수가 생긴다.
         context['posts_without_category'] = Post.objects.filter(category=None).count() #get은 하나 filter는 특정 조건 all은 전부 #
         #category가 없는 것만 가져오기 이름이 posts_without_categor 이다 즉 object를 안서도 됨
+
         return context
 
 def index(request): # request는 기본이다.
@@ -43,6 +44,34 @@ class PostDetail(DetailView):
         #category가 없는 것만 가져오기 이름이 posts_without_categor 이다 즉 object를 안서도 됨
         return context
 
+class PostListByCategory(ListView):
+    def get_queryset(self):
+        slug = self.kwargs['slug']
+
+        if slug == '_none': # 미분류르 넣기 위한 방법
+            category = None
+        else :
+            category = Category.objects.get(slug=slug)
+
+        return Post.objects.filter(category=category).order_by('-creaded')
+
+    def get_context_data(self, *, object_list=None, **kwargs): # 미리 만들어줌. 새로운 인자
+        context = super(type(self), self).get_context_data(**kwargs) # 그량 외우기 복사 붙어넣기로
+        context['category_list'] = Category.objects.all() # html에 category_list 변수가 생긴다.
+        context['posts_without_category'] = Post.objects.filter(category=None).count() #get은 하나 filter는 특정 조건 all은 전부 #
+        #category가 없는 것만 가져오기 이름이 posts_without_categor 이다 즉 object를 안서도 됨
+
+
+        slug = self.kwargs['slug']
+        if slug == '_none': # 미분류르 넣기 위한 방법
+            category = None
+            context['category']= "미분류"
+        else :
+            category = Category.objects.get(slug=slug)
+            context['category'] = category
+
+        # context['title'] = "Blog - {}".format(category.name)
+        return context
 # def index(request):
 #     posts = Post.objects.all()
 #     return  render(

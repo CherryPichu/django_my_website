@@ -18,6 +18,7 @@ from django.urls import path, include # include 가져오기
 from . import views
 
 urlpatterns = [
+    path('category/<str:slug>/', views.PostListByCategory.as_view()), # slug url 만들기
     path('<int:pk>/', views.PostDetail.as_view()), # <int:pk> int 타입으로 숫자가 들어올 때 pk를 의미한다.
     # views의 post_detail를 실행시킨다.
     # 번호를 하나씩 부여한다.

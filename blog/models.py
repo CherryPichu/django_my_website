@@ -7,10 +7,18 @@ class Category(models.Model):
     name = models.CharField(max_length=25, unique=True)
     description = models.TextField(blank=True) # 카테고리에 대한 설명을 쓸 수 있다. 중복을 방지하기 위해서  unique=True 사용
 
+    slug = models.SlugField(unique=True, allow_unicode=True) # allow_unicode = 한글을 허용 적절하게 /이름/ 으로 만들어줌
+
     def __str__(self):
         return self.name
-    class Meta:
+
+    def get_absolute_url(self):
+        return '/blog/category/{}/'.format(self.slug)
+
+    class Meta: # 이름 바꾸는 방법중 하나
         verbose_name_plural = 'categories'
+
+
 
 
 class Post(models.Model):

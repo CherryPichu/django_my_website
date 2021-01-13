@@ -9,6 +9,10 @@ def create_category(name = "life", description = ''): # 관습 null 이 아니�
         name = name,
         description = description
     )
+
+    category.slug = category.name.replace(' ', '-').replace('/', '')
+    category.save() # slug를 위한 코드
+
     return category
 
 def create_post(title, content, author, category = None):
@@ -44,7 +48,7 @@ class TestView(TestCase) : # 테스트 모듈 상속
     def test_post_list(self): # 이 함수를 실행시킬 때 마다 새롭게 시작한다.
         response = self.client.get('/blog/') # 숫자를 써주야만 해당 포스트로 간다.
         self.assertEqual(response.status_code, 200)
-        
+
         soup = BeautifulSoup(response.content, 'html.parser')
         title = soup.title
 
@@ -93,7 +97,7 @@ class TestView(TestCase) : # 테스트 모듈 상속
         self.check_right_side(body)
 
         #### 첫번째 포스트에는 '정치/사회' 있어야 함
-        main_div = body.find('div', id='main_div')
+        main_div = body.find('div', id="main-div")
         self.assertIn('정치/사회', main_div.text)
         self.assertIn('미분류', main_div.text)
 
@@ -130,7 +134,7 @@ class TestView(TestCase) : # 테스트 모듈 상속
         self.check_navbar(soup) # 네비게이션 바가 있니?
 
         body = soup.body
-        main_div = body.find('div', id = "main_div")
+        main_div = body.find('div', id = "main-div")
         self.assertIn(post_000.title, main_div.text)
         self.assertIn(post_000.author.username, main_div.text)
         self.assertIn(post_000.content, main_div.text)
@@ -138,8 +142,55 @@ class TestView(TestCase) : # 테스트 모듈 상속
 
         self.check_right_side(body)
 
+    def test_post_list_by_category(self):
+        category_politics = create_category(name='정치/사회')
+        post_000 = create_post(
+            title="The first post",
+            content="Hello World We are thr world.",
+            author=self.author_000,
+        )  # db 추가
+        post_001 = create_post(
+            title='The second post',
+            content='Second Second Second',
+            author=self.author_000,
+            category=create_category(name='정치/사회')
+        )
 
 
+        response = self.client.get(category_politics.get_absolute_url())
+        self.assertEqual(response.status_code, 200)
+
+        soup = BeautifulSoup(response.content, 'html.parser')
+        # self.assertEqual('Blog - {}'.format(category_politics.name))
+
+        main_div = soup.find('div', id = 'main-div')
+        self.assertNotIn('미분류', main_div.text)
+        self.assertIn('정치/사회', main_div.text)
+
+    def test_post_list_no_category(self):
+        category_politics = create_category(name='정치/사회')
+        post_000 = create_post(
+            title="The first post",
+            content="Hello World We are thr world.",
+            author=self.author_000,
+        )  # db 추가
+        post_001 = create_post(
+            title='The second post',
+            content='Second Second Second',
+            author=self.author_000,
+            category=create_category(name='정치/사회')
+        )
+
+
+        response = self.client.get('/blog/category/_none/')
+        self.assertEqual(response.status_code, 200)
+
+        soup = BeautifulSoup(response.content, 'html.parser')
+        # self.assertEqual('Blog - {}'.format(category_politics.name))
+
+        main_div = soup.find('div', id = 'main-div')
+        self.assertIn('미분류', main_div.text)
+        self.assertNotIn('정치/사회', main_div.text)
 
 class TestModel(TestCase):
     def setUp(self):
@@ -155,7 +206,7 @@ class TestModel(TestCase):
             author = self.author_000,
             category=category # 카테고리를 만들어서 넣기
         ) # db 추가
-        
+
         self.assertEqual(category.post_set.count(), 1) # 해당 category의 포스트의 갯수가 1이 맞냐??
     def test_post(self):
         category = create_category()
@@ -167,8 +218,5 @@ class TestModel(TestCase):
             category=category # 카테고리를 만들어서 넣기
         ) # db 추가
 
-    def test_post_list_with_post(self):
-        pass
-        
 
 
