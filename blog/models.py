@@ -18,6 +18,12 @@ class Category(models.Model):
     class Meta: # 이름 바꾸는 방법중 하나
         verbose_name_plural = 'categories'
 
+class Tag(models.Model) :
+    name = models.CharField(max_length=40, unique=True)
+    slug = models.SlugField(unique=True, allow_unicode=True)
+
+    def __str__(self):
+        return self.name
 
 
 
@@ -26,6 +32,7 @@ class Post(models.Model):
     content = models.TextField() # 블로그 내용
     head_image = models.ImageField(upload_to='blog/%Y/%M/%d/',blank=True) # 년도를 넣게됨 Y 하면은 이미지 업로드 모듈
     creaded = models.DateField() #언제 작성이 되는지
+    tags = models.ManyToManyField(Tag) # tag추가후 post에 추가
 
 
     author = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL) # 어떤 사용자가 사용이 되는지 유저라는 객체를 연결시켜줌

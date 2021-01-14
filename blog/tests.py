@@ -1,6 +1,6 @@
 from django.test import TestCase, Client
 from bs4 import BeautifulSoup
-from .models import Post , Category
+from .models import Post , Category, Tag
 from django.utils import timezone
 from django.contrib.auth.models import User
 
@@ -25,6 +25,14 @@ def create_post(title, content, author, category = None):
     )
     return blog_post
 
+def create_tag(name = "some_tag"):
+    tag, is_created = Tag.objects.get_or_create(
+        name=name
+        )
+    tag.slug = tag.name.replace(' ', '-').replace('/', '')
+    tag.save()
+
+    return tag
 
 # Create your tests here. ## test할 코드를 작성
 class TestView(TestCase) : # 테스트 모듈 상속
@@ -103,6 +111,31 @@ class TestView(TestCase) : # 테스트 모듈 상속
 
 
 
+    def test_post_list_by_category(self):
+        category_politics = create_category(name='정치/사회')
+        post_000 = create_post(
+            title="The first post",
+            content="Hello World We are thr world.",
+            author=self.author_000,
+        )  # db 추가
+        post_001 = create_post(
+            title='The second post',
+            content='Second Second Second',
+            author=self.author_000,
+            category=create_category(name='정치/사회')
+        )
+
+
+        response = self.client.get(category_politics.get_absolute_url())
+        self.assertEqual(response.status_code, 200)
+
+        soup = BeautifulSoup(response.content, 'html.parser')
+        # self.assertEqual('Blog - {}'.format(category_politics.name))
+
+        main_div = soup.find('div', id = 'main-div')
+        self.assertNotIn('미분류', main_div.text)
+        self.assertIn('정치/사회', main_div.text)
+
     def test_post_detail(self): #
 
         post_000 = create_post(
@@ -141,31 +174,6 @@ class TestView(TestCase) : # 테스트 모듈 상속
 
 
         self.check_right_side(body)
-
-    def test_post_list_by_category(self):
-        category_politics = create_category(name='정치/사회')
-        post_000 = create_post(
-            title="The first post",
-            content="Hello World We are thr world.",
-            author=self.author_000,
-        )  # db 추가
-        post_001 = create_post(
-            title='The second post',
-            content='Second Second Second',
-            author=self.author_000,
-            category=create_category(name='정치/사회')
-        )
-
-
-        response = self.client.get(category_politics.get_absolute_url())
-        self.assertEqual(response.status_code, 200)
-
-        soup = BeautifulSoup(response.content, 'html.parser')
-        # self.assertEqual('Blog - {}'.format(category_politics.name))
-
-        main_div = soup.find('div', id = 'main-div')
-        self.assertNotIn('미분류', main_div.text)
-        self.assertIn('정치/사회', main_div.text)
 
     def test_post_list_no_category(self):
         category_politics = create_category(name='정치/사회')
@@ -208,6 +216,32 @@ class TestModel(TestCase):
         ) # db 추가
 
         self.assertEqual(category.post_set.count(), 1) # 해당 category의 포스트의 갯수가 1이 맞냐??
+
+    def test_tag(self):
+        tag_000 = create_tag(name='bad_guy')
+        tag_001 = create_tag(name='america')
+        post_000 = create_post(
+            title = "The first post",
+            content="Hello World We are thr world.",
+            author = self.author_000,
+        ) # db 추가
+        post_001 = create_post(
+            title = "Stay Fool, Stay Hungry",
+            content="Hello World We are thr world.",
+            author = self.author_000,
+        ) # db 추가
+        post_000.tags.add(tag_000)
+        post_000.tags.add(tag_001)
+        post_000.save()
+
+        post_001.tags.add(tag_001)
+        post_001.save()
+
+        self.assertEqual(post_000.tags.count(), 2)# post는 여러개의 tag를 가질 수 있다.
+        self.assertEqual(tag_001.post_set.count(), 2)  # 하나의 tag는 여러개의 post에 붙을 수 있다.
+        self.assertEqual(tag_001.post_set.first(), post_000)# 하나의 tag는 자신을 가진 post들을 불러올 수 있다.
+        self.assertEqual(tag_001.post_set.last(), post_001)# 하나의 tag는 자신을 가진 post들을 불러올 수 있다.
+
     def test_post(self):
         category = create_category()
 
