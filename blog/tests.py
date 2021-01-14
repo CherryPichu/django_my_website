@@ -1,12 +1,12 @@
 from django.test import TestCase, Client
 from bs4 import BeautifulSoup
-from .models import Post , Category, Tag
+from .models import Post, Category, Tag
 from django.utils import timezone
 from django.contrib.auth.models import User
 
-def create_category(name = "life", description = ''): # 관습 null 이 아니라 '' 으로
-    category , is_created= Category.objects.get_or_create( # get or create는 이름이 life 인 것이 있으면 get을 하고 없으면 만들어서 가져와라
-        name = name,
+def create_category(name="life",description=''):# 관습 null 이 아니라 '' 으로
+    category, is_created= Category.objects.get_or_create( # get or create는 이름이 life 인 것이 있으면 get을 하고 없으면 만들어서 가져와라
+        name=name,
         description = description
     )
 
@@ -48,7 +48,7 @@ class TestView(TestCase) : # 테스트 모듈 상속
     def check_right_side(self, body):
         # category card 에서
         category_card = body.find('div', id = 'category-card')
-        self.assertIn('미분류(1)', category_card.text) #### 미분류(1) 있어야 함
+        self.assertIn('미분류(1)', category_card.text)#### 미분류(1) 있어야 함
         self.assertIn('정치/사회(1)', category_card.text)#### 정치/사회 (1) 있어야 함
 
 
@@ -74,6 +74,7 @@ class TestView(TestCase) : # 테스트 모듈 상속
 
         self.assertEqual(Post.objects.count(), 0)
 
+        tag_america = create_tag(name='america')
         # post_000 = Post.objects.create(
         post_000 = create_post(
             title = "The first post",
@@ -87,6 +88,10 @@ class TestView(TestCase) : # 테스트 모듈 상속
             category=create_category(name='정치/사회')
         )
         ## 생성은 항상 앞에 있어야만 작동됨!!
+
+        post_000.tags.add(tag_america)
+        post_000.save()
+
 
         self.assertGreater(Post.objects.count(), 0) # a가 b보다 크지 않는다. / 새로 DB를 만들고 그곳에서 테스트하기 때문에 fail
 
@@ -109,15 +114,22 @@ class TestView(TestCase) : # 테스트 모듈 상속
         self.assertIn('정치/사회', main_div.text)
         self.assertIn('미분류', main_div.text)
 
+        #Tag
+        post_card_000 = main_div.find('div', id='post-card-{}'.format(post_000.pk))
+        self.assertIn("#america", post_card_000.text) # tag가 해당 post의 card마다 있다.
+
 
 
     def test_post_list_by_category(self):
         category_politics = create_category(name='정치/사회')
+
         post_000 = create_post(
             title="The first post",
             content="Hello World We are thr world.",
             author=self.author_000,
         )  # db 추가
+
+
         post_001 = create_post(
             title='The second post',
             content='Second Second Second',
@@ -150,6 +162,9 @@ class TestView(TestCase) : # 테스트 모듈 상속
             category=create_category(name='정치/사회')
         )
 
+        tag_america = create_tag(name="america")
+        post_000.tags.add(tag_america)
+        post_000.save()
 
         self.assertGreater(Post.objects.count(), 0)
         post_000_url = post_000.get_absolute_url()
@@ -172,8 +187,10 @@ class TestView(TestCase) : # 테스트 모듈 상속
         self.assertIn(post_000.author.username, main_div.text)
         self.assertIn(post_000.content, main_div.text)
 
-
         self.check_right_side(body)
+
+        #Tag
+        self.assertIn("#america", main_div.text) # tag가 해당 post의 card마다 있다.
 
     def test_post_list_no_category(self):
         category_politics = create_category(name='정치/사회')
@@ -252,5 +269,7 @@ class TestModel(TestCase):
             category=category # 카테고리를 만들어서 넣기
         ) # db 추가
 
+    def test_post_list_tag(self):
+        pass
 
 
