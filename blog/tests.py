@@ -28,7 +28,7 @@ def create_post(title, content, author, category = None):
 def create_tag(name = "some_tag"):
     tag, is_created = Tag.objects.get_or_create(
         name=name
-        )
+    )
     tag.slug = tag.name.replace(' ', '-').replace('/', '')
     tag.save()
 
@@ -269,7 +269,36 @@ class TestModel(TestCase):
             category=category # 카테고리를 만들어서 넣기
         ) # db 추가
 
-    def test_post_list_tag(self):
-        pass
+    def test_tag_page(self):
+        tag_000 = create_tag(name='bad_guy')
+        tag_001 = create_tag(name='america')
+        post_000 = create_post(
+            title="The first post",
+            content="Hello World We are thr world.",
+            author=self.author_000,
+        )  # db 추가
+        post_001 = create_post(
+            title="Stay Fool, Stay Hungry",
+            content="Hello World We are thr world.",
+            author=self.author_000,
+        )  # db 추가
+        post_000.tags.add(tag_000)
+        post_000.tags.add(tag_001)
+        post_000.save()
 
+        post_001.tags.add(tag_001)
+        post_001.save()
+
+        response = self.client.get(tag_000.get_absolute_url())
+
+
+        self.assertEqual(response.status_code, 200)
+
+        soup = BeautifulSoup(response.content, 'html.parser')
+
+        main_div = soup.find('div', id = "main-div")
+        blog_div = main_div('h1', id="blog-list-title")
+        self.assertIn("#{}".format(tag_000.name), main_div.text)
+        self.assertIn(post_000.title, main_div.text)
+        self.assertNotIn(post_001.title, main_div.text)
 

@@ -2,8 +2,10 @@
 
 
 {% block content %}
-    <h1 class="my-4">블로그 : {% if category %}<small class = "text-muted">{{ category }}</small>{% endif %}</h1>
-
+    <h1 id="blog-list-title"> 블로그 :
+    {% if category %}<small class = "text-muted">{{ category }}</small>{% endif %}
+    {% if tag %}<small class = "text-muted">#{{ tag }}</small>{% endif %}
+    </h1>
     <!-- Blog Post -->
 
     {% if object_list %} {# exists가 컴퓨터에 덜 부담됨 #}

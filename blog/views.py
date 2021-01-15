@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .models import Post , Category
+from .models import Post , Category, Tag
 from django.views.generic import ListView, DetailView
 
 
@@ -42,6 +42,20 @@ class PostDetail(DetailView):
         context['category_list'] = Category.objects.all() # html에 category_list 변수가 생긴다.
         context['posts_without_category'] = Post.objects.filter(category=None).count() #get은 하나 filter는 특정 조건 all은 전부 #
         #category가 없는 것만 가져오기 이름이 posts_without_categor 이다 즉 object를 안서도 됨
+        return context
+
+class PostListByTag(ListView):
+    def get_queryset(self):
+        tag_slug = self.kwargs['slug']
+        tag = Tag.objects.get(slug=tag_slug)
+
+        return tag.post_set.order_by('-creaded')
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super(PostListByTag, self).get_context_data(**kwargs)
+        context['category_list'] = Category.objects.all()
+        tag_slug = self.kwargs['slug']
+        context['tag'] = Tag.objects.get(slug=tag_slug)
         return context
 
 class PostListByCategory(ListView):
