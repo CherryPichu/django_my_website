@@ -1,7 +1,6 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .models import Post , Category, Tag
-from django.views.generic import ListView, DetailView
-
+from django.views.generic import ListView, DetailView, UpdateView, CreateView
 
 # Create your views here.
 
@@ -44,6 +43,10 @@ class PostDetail(DetailView):
         #category가 없는 것만 가져오기 이름이 posts_without_categor 이다 즉 object를 안서도 됨
         return context
 
+class PostUpdate(UpdateView):
+    model = Post
+    # fields = '__all__' # 필드의 모든 것을 가져오라
+    fields = ['title', 'content', 'head_image', 'category', 'tags'] # 해당 것만 가져와라
 class PostListByTag(ListView):
     def get_queryset(self):
         tag_slug = self.kwargs['slug']
@@ -57,6 +60,18 @@ class PostListByTag(ListView):
         tag_slug = self.kwargs['slug']
         context['tag'] = Tag.objects.get(slug=tag_slug)
         return context
+
+class PostCreate(CreateView) :
+    model = Post
+    fields = ['title', 'content', 'head_image', 'category', 'tags'] # 해당 것만 가져와라
+
+    def form_valid(self, form): # 현제 사용중인 유저를 가져와서
+        current_user = self.request.user
+        if current_user.is_authenticated:
+            form.instance.author = current_user # 사용자를 가져와서 오버라이딩으로 덮어쓰기
+            return super(type(self), self).form_valid(form)
+        else :
+            return redirect('/blog/') # 없으면 
 
 class PostListByCategory(ListView):
     def get_queryset(self):

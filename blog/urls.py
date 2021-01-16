@@ -20,8 +20,13 @@ from . import views
 urlpatterns = [
     path('category/<str:slug>/', views.PostListByCategory.as_view()), # slug url 만들기
     path('tag/<str:slug>/', views.PostListByTag.as_view()), # slug url 만들기
+    path('<int:pk>/update/', views.PostUpdate.as_view()), # <int:pk> int 타입으로 숫자가 들어올 때 pk를 의미한다.
     path('<int:pk>/', views.PostDetail.as_view()), # <int:pk> int 타입으로 숫자가 들어올 때 pk를 의미한다.
+    path('create/', views.PostCreate.as_view()),
     # views의 post_detail를 실행시킨다.
     # 번호를 하나씩 부여한다.
     path('', views.PostList.as_view()),
 ]
+
+
+

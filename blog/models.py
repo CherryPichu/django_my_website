@@ -36,8 +36,8 @@ class Post(models.Model):
     title = models.CharField(max_length = 30) # 블로그에서 글
     content = MarkdownxField() # 블로그 내용 # TextField() - > MarkdownxField 교체  마크 다운 적용
     head_image = models.ImageField(upload_to='blog/%Y/%M/%d/',blank=True) # 년도를 넣게됨 Y 하면은 이미지 업로드 모듈
-    creaded = models.DateField() #언제 작성이 되는지
-    tags = models.ManyToManyField(Tag, null=True, blank=True) # tag추가후 post에 추가, blank=True, null=True : 태그가 없어도 됨
+    creaded = models.DateField(auto_now_add=True) #언제 작성이 되는지
+    tags = models.ManyToManyField(Tag, blank=True) # tag추가후 post에 추가, blank=True, null=True : 태그가 없어도 됨
 
 
     author = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL) # 어떤 사용자가 사용이 되는지 유저라는 객체를 연결시켜줌
@@ -50,6 +50,9 @@ class Post(models.Model):
 
     def get_absolute_url(self): # 어드민 페이지에 view onsite 버튼이 생김
         return '/blog/{}/'.format(self.pk)
+
+    def get_update_url(self): # 어드민 페이지에 view onsite 버튼이 생김
+        return self.get_absolute_url() + "update/"
 
     def get_markdown_content(self):# 마크다운 적용 텍스트에 이미지 넣기
         return markdown(self.content)

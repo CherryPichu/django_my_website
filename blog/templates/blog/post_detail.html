@@ -22,7 +22,7 @@
     </p>
 
     {% if request.user == object.author %}
-        <span type="button" class="btn btn-sm btn-outline-secondary float-right">EDIT</span>
+        <span type="button" class="btn btn-sm btn-outline-secondary float-right" onclick="location.href='{{ object.get_update_url }}'">EDIT</span>
     {% endif %}
     <hr>
 
