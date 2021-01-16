@@ -21,6 +21,7 @@ from django.conf import settings # url 모음을 위한 추가2
 urlpatterns = [
     path('blog/', include('blog.urls')), # 이 blog로 왔을 때 blog.urls 로 가라
     path('admin/', admin.site.urls),
+    path('markdownx/', include('markdownx.urls')), # url이 아니라 path로 사용 가능
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
