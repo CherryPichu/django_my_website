@@ -241,7 +241,7 @@ class TestView(TestCase):  # 테스트 모듈 상속
 class TestModel(TestCase):
     def setUp(self):
         self.client = Client()
-        self.author_000 = User.objects.create(username="smith", password='nopassword')
+        self.author_000 = User.objects.create_user(username="smith", password='nopassword') # create가 아닌 creat_user 필수!!
 
     def test_category(self):
         category = create_category()
@@ -324,7 +324,11 @@ class TestModel(TestCase):
 
     def test_post_create(self):
         response = self.client.get('/blog/create/')  # 문제없지 접근이 되는지 확인 models에 get_update_url 추가
+        self.assertNotEqual(response.status_code, 200)
+        self.client.login(username="smith", password='nopassword')
+        response = self.client.get('/blog/create/')
         self.assertEqual(response.status_code, 200)
+
         soup = BeautifulSoup(response.content, 'html.parser')
         main_div = soup.find('div', id="main-div")
 

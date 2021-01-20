@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from .models import Post , Category, Tag
 from django.views.generic import ListView, DetailView, UpdateView, CreateView
-
+from django.contrib.auth.mixins import LoginRequiredMixin # 로그인 한 유저만 페이지에 접속 할 수 있도록 하는 라이브러리
 # Create your views here.
 
 class PostList(ListView):
@@ -61,7 +61,7 @@ class PostListByTag(ListView):
         context['tag'] = Tag.objects.get(slug=tag_slug)
         return context
 
-class PostCreate(CreateView) :
+class PostCreate(LoginRequiredMixin, CreateView) :# LoginRequiredMixin 로그인 한 사람만 접속할 수 있도록 함.
     model = Post
     fields = ['title', 'content', 'head_image', 'category', 'tags'] # 해당 것만 가져와라
 
@@ -71,7 +71,7 @@ class PostCreate(CreateView) :
             form.instance.author = current_user # 사용자를 가져와서 오버라이딩으로 덮어쓰기
             return super(type(self), self).form_valid(form)
         else :
-            return redirect('/blog/') # 없으면 
+            return redirect('/blog/') # 없으면
 
 class PostListByCategory(ListView):
     def get_queryset(self):
